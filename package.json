@@ -3,5 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "kallel roman",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.19.4",
+    "sucrase": "^3.10.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

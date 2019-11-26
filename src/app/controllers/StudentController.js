@@ -40,8 +40,6 @@ class StudentController {
       where: { email },
     });
 
-    console.log(req.body);
-
     if (!studentExists) {
       return res.status(400).json({ error: 'Student does not exists' });
     }

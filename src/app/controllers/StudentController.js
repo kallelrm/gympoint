@@ -30,21 +30,27 @@ class StudentController {
   }
 
   async update(req, res) {
-    return res.json({ message: 'ok' });
+    const { email, name, age, height, weight } = req.body;
 
-    // const studentExists = await Students.findOne({
-    //   where: { email: req.body.email },
-    // });
+    if (!email) {
+      return res.status(400).json({ error: 'Email not provided' });
+    }
 
-    // if (!studentExists) {
-    //   return res.status(400).json({ error: 'User does not exists' });
-    // }
+    const studentExists = await Students.findOne({
+      where: { email },
+    });
 
-    // const { name, email, age, height, weight } = await Students.update(
-    //   req.body
-    // );
+    console.log(req.body);
 
-    // return res.json({ message: 'User updated succesfully' });
+    if (!studentExists) {
+      return res.status(400).json({ error: 'Student does not exists' });
+    }
+
+    await Students.update(req.body, {
+      where: { email },
+    });
+
+    return res.json({ email, name, age, height, weight });
   }
 }
 

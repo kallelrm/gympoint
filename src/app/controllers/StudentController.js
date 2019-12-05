@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
 
-import Students from '../models/Students';
+import Student from '../models/Students';
 
 class StudentController {
   async index(req, res) {
-    const students = await Students.findAll();
+    const students = await Student.findAll();
 
     return res.json(students);
   }
@@ -24,15 +24,15 @@ class StudentController {
       return res.status(400).json({ Error: 'Validation failure' });
     }
 
-    const studentExists = await Students.findOne({
+    const student = await Student.findOne({
       where: { email: req.body.email },
     });
 
-    if (studentExists) {
+    if (student) {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    const { name, email, age, height, weight } = await Students.create(
+    const { id, name, email, age, height, weight } = await student.create(
       req.body
     );
 
@@ -46,43 +46,54 @@ class StudentController {
   }
 
   async update(req, res) {
-    const { email, name, age, height, weight } = req.body;
-
-    if (typeof name !== 'string') {
-      return res.status(400).json({ Error: 'Validation Failure' });
-    }
+    // if (typeof name !== 'string') {
+    //   return res.status(400).json({ Error: 'Validation Failure' });
+    // }
 
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string()
         .email()
         .required(),
-      age: Yup.number(),
-      height: Yup.number(),
-      weight: Yup.number(),
+      age: Yup.number()
+        .integer()
+        .positive(),
+      height: Yup.number().positive(),
+      weight: Yup.number().positive(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ Error: 'Validation failure' });
     }
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email not provided' });
-    }
+    // const emailExists = await Student.findOne({
+    //   where: { email: req.body.email },
+    //   ,
+    // });
 
-    const studentExists = await Students.findOne({
-      where: { email },
-    });
+    // if (emailExists) {
+    //   return res.status(400).json({ error: 'email already exists' });
+    // }
+    const student = await Student.findByPk(req.params.id);
 
-    if (!studentExists) {
+    if (!student) {
       return res.status(400).json({ error: 'Student does not exists' });
     }
 
-    await Students.update(req.body, {
-      where: { email },
-    });
+    if (student.email !== req.body.email) {
+      const validStudent = await Student.findOne({
+        where: { email: req.body.email },
+      });
+      if (validStudent) {
+        return res.status(400).json({ error: 'Email is not available' });
+      }
+    }
 
-    return res.json({ email, name, age, height, weight });
+    const { id, name, email, age, weight, height } = await student.update(
+      req.body
+    );
+
+    return res.json({ id, name, email, age, weight, height });
   }
 }
 

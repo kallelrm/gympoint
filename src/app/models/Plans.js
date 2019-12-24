@@ -6,7 +6,7 @@ class Plans extends Model {
       {
         title: Sequelize.STRING,
         duration: Sequelize.INTEGER,
-        price: Sequelize.NUMBER,
+        price: Sequelize.FLOAT,
       },
       {
         sequelize,

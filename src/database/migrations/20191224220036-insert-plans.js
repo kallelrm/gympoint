@@ -33,7 +33,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    const Op = { Sequelize };
     return queryInterface.bulkDelete(
       'plans',
       { id: { [Sequelize.Op.gt]: 1 } },

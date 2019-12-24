@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-
 import Student from '../models/Students';
 
 class StudentController {
@@ -15,13 +14,21 @@ class StudentController {
       email: Yup.string()
         .email()
         .required(),
-      age: Yup.number().required(),
-      height: Yup.number().required(),
-      weight: Yup.number().required(),
+      age: Yup.number()
+        .positive()
+        .required(),
+      height: Yup.number()
+        .positive()
+        .required(),
+      weight: Yup.number()
+        .positive()
+        .required(),
     });
 
+    console.log(JSON.stringify(req.body));
+
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ Error: 'Validation failure' });
+      return res.status(400).json({ Error: 'Validation failure', schema });
     }
 
     const student = await Student.findOne({
@@ -32,9 +39,7 @@ class StudentController {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    const { id, name, email, age, height, weight } = await student.create(
-      req.body
-    );
+    const { name, email, age, height, weight } = await Student.create(req.body);
 
     return res.json({
       name,
@@ -46,10 +51,6 @@ class StudentController {
   }
 
   async update(req, res) {
-    // if (typeof name !== 'string') {
-    //   return res.status(400).json({ Error: 'Validation Failure' });
-    // }
-
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string()

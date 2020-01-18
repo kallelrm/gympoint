@@ -54,6 +54,10 @@ class RegistrationController {
 
     return res.json({ register });
   }
+
+  async delete(req, res) {
+    return res.json({ message: 'ok' });
+  }
 }
 
 export default new RegistrationController();

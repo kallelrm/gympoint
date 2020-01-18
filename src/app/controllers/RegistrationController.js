@@ -56,7 +56,21 @@ class RegistrationController {
   }
 
   async delete(req, res) {
-    return res.json({ message: 'ok' });
+    const { id } = req.params;
+
+    const registration = await Registration.findOne({
+      where: { id },
+    });
+
+    if (!registration) {
+      return res.json({ error: 'registration not found' });
+    }
+
+    await Registration.destroy({
+      where: { id },
+    });
+
+    return res.json({ registration });
   }
 }
 

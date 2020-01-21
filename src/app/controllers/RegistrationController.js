@@ -4,6 +4,8 @@ import Registration from '../models/Registrations';
 import Student from '../models/Students';
 import Plan from '../models/Plans';
 
+import Mail from '../../lib/Mail';
+
 class RegistrationController {
   async index(req, res) {
     const registrations = await Registration.findAll();
@@ -22,9 +24,7 @@ class RegistrationController {
 
     const { student_id, plan_id } = req.body;
 
-    const student = await Student.findOne({
-      where: { id: student_id },
-    });
+    const student = await Student.findByPk(student_id);
 
     const plan = await Plan.findOne({
       where: { id: plan_id },
@@ -38,8 +38,6 @@ class RegistrationController {
       return res.status(400).json({ error: 'Plan does not exists' });
     }
 
-    console.log(plan.duration);
-
     const start_date = new Date();
     const end_date = addMonths(new Date(), plan.duration);
     const price = plan.duration * plan.price;
@@ -50,6 +48,12 @@ class RegistrationController {
       start_date,
       end_date,
       price,
+    });
+
+    await Mail.sendMail({
+      to: `${student.name}, <${student.email}>`,
+      subject: 'Registro realizado com sucesso',
+      text: 'Bem vindo ao Gympont',
     });
 
     return res.json({ register });

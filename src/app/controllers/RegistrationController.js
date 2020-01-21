@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
-import { addMonths } from 'date-fns';
+import { addMonths, format } from 'date-fns';
+import pt from 'date-fns/locale';
 import Registration from '../models/Registrations';
 import Student from '../models/Students';
 import Plan from '../models/Plans';
@@ -53,7 +54,15 @@ class RegistrationController {
     await Mail.sendMail({
       to: `${student.name}, <${student.email}>`,
       subject: 'Registro realizado com sucesso',
-      text: 'Bem vindo ao Gympont',
+      template: 'registration',
+      context: {
+        student: student.name,
+        plan: plan.title,
+        duration: plan.duration,
+        endDate: format(end_date, "'dia' dd 'de' MMMM', às' H:mm'h'", {
+          locale: pt,
+        }),
+      },
     });
 
     return res.json({ register });
